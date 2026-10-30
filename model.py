@@ -117,8 +117,21 @@ void launch_add_bias(float* Z, const float* b, int rows, int cols) {
     add_bias_kernel<<<(rows * cols + 255) / 256, 256>>>(Z, b, rows, cols);
 }
 
-# Step 6 - relu_kernel (not yet solved)
-# TODO: implement
+# Step 6 - relu_kernel
+#include <cuda_runtime.h>
+
+__global__ void relu_kernel(float* Z, int n) {
+    // TODO: Z[i] = max(Z[i], 0) for i < n
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i < n) {
+        Z[i] = max(Z[i], 0.0f);
+    }
+}
+
+void launch_relu(float* Z, int n) {
+    // TODO: 256 threads per block
+    relu_kernel<<<(n + 255) / 256, 256>>>(Z, n);
+}
 
 # Step 7 - softmax_rows_kernel (not yet solved)
 # TODO: implement
