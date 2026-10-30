@@ -79,8 +79,29 @@ void make_spiral(float* X, int* y, int points_per_class, int classes, float nois
     }
 }
 
-# Step 4 - matmul_kernel (not yet solved)
-# TODO: implement
+# Step 4 - matmul_kernel
+#include <cuda_runtime.h>
+#define BLOCK 16
+__global__ void matmul_kernel(const float* A, const float* B, float* C, int M, int N, int K) {
+    // TODO: col from x, row from y, guard, accumulate over k, store C[row * N + col]
+    int col = blockIdx.x * blockDim.x + threadIdx.x;
+    int row = blockIdx.y * blockDim.y + threadIdx.y;
+
+    if (row < M && col < N) {
+        float sum = 0;
+        for (int k = 0; k < K; k++) {
+            sum += A[row * K + k] * B[k * N + col];
+        }
+        C[row * N + col] = sum;
+    } 
+}
+
+void launch_matmul(const float* A, const float* B, float* C, int M, int N, int K) {
+    // TODO: 16 x 16 blocks, grid covering N columns (x) and M rows (y)
+    dim3 block(BLOCK, BLOCK);
+    dim3 grid((N - 1 + BLOCK) / BLOCK, (M - 1 + BLOCK) / BLOCK);
+    matmul_kernel<<<grid, block>>>(A, B, C, M, N, K);
+}
 
 # Step 5 - add_bias_kernel (not yet solved)
 # TODO: implement
