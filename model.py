@@ -20,8 +20,32 @@ int report_cuda_error(cudaError_t err, const char* what) {
     return 1;
 }
 
-# Step 2 - device_upload (not yet solved)
-# TODO: implement
+# Step 2 - device_upload
+#include <cuda_runtime.h>
+
+float* device_upload(const float* host, int n) {
+    // TODO: cudaMalloc n 2floats, cudaMemcpy host -> device, return the device pointer
+    size_t size = n * sizeof(float);
+    float* h_ptr;
+    cudaMalloc(&h_ptr, size);
+    cudaMemcpy(h_ptr, host, size, cudaMemcpyHostToDevice);
+    return h_ptr;
+}
+
+int* device_upload(const int* host, int n) {
+    // TODO: same for ints
+    size_t size = n * sizeof(int);
+    int* h_ptr;
+    cudaMalloc(&h_ptr, size);
+    cudaMemcpy(h_ptr, host, size, cudaMemcpyHostToDevice);
+    return h_ptr;
+}
+
+void device_download(float* host, const float* dev, int n) {
+    // TODO: cudaMemcpy device -> host
+    size_t size = n * sizeof(float);
+    cudaMemcpy(host, dev, size, cudaMemcpyDeviceToHost);
+}
 
 # Step 3 - make_spiral (not yet solved)
 # TODO: implement
