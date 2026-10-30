@@ -133,8 +133,32 @@ void launch_relu(float* Z, int n) {
     relu_kernel<<<(n + 255) / 256, 256>>>(Z, n);
 }
 
-# Step 7 - softmax_rows_kernel (not yet solved)
-# TODO: implement
+# Step 7 - softmax_rows_kernel
+#include <cuda_runtime.h>
+
+__global__ void softmax_rows_kernel(const float* logits, float* probs, int rows, int cols) {
+    // TODO: one thread per row: max, sum of exp(z - max), then normalise
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i >= rows) {
+        return;
+    }
+    float row_max = -FLT_MIN;
+    for (int j = 0; j < cols; j++) {
+        row_max = max(logits[i * cols + j], row_max);
+    }
+    float sum = 0.0f;
+    for (int s = 0; s < cols; s++) {
+        sum += expf(logits[i * cols + s] - row_max);
+    }
+    for (int k = 0; k < cols; k++) {
+        probs[i * cols + k] = expf(logits[i * cols + k] - row_max)/sum;
+    }
+}
+
+void launch_softmax_rows(const float* logits, float* probs, int rows, int cols) {
+    // TODO: 128 threads per block, one thread per row
+    softmax_rows_kernel<<<(rows + 127) / 128, 128>>>(logits, probs, rows, cols);
+}
 
 # Step 8 - cross_entropy_kernel (not yet solved)
 # TODO: implement
