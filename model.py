@@ -103,8 +103,19 @@ void launch_matmul(const float* A, const float* B, float* C, int M, int N, int K
     matmul_kernel<<<grid, block>>>(A, B, C, M, N, K);
 }
 
-# Step 5 - add_bias_kernel (not yet solved)
-# TODO: implement
+# Step 5 - add_bias_kernel
+#include <cuda_runtime.h>
+
+__global__ void add_bias_kernel(float* Z, const float* b, int rows, int cols) {
+    // TODO: one thread per element; element i gets b[i % cols]
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    Z[i] += b[i % cols];
+}
+
+void launch_add_bias(float* Z, const float* b, int rows, int cols) {
+    // TODO: 256 threads per block over rows * cols elements
+    add_bias_kernel<<<(rows * cols + 255) / 256, 256>>>(Z, b, rows, cols);
+}
 
 # Step 6 - relu_kernel (not yet solved)
 # TODO: implement
