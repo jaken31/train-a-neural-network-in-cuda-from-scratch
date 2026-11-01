@@ -240,8 +240,50 @@ void free_mlp(MLP& m) {
     m.b2 = nullptr;
 }
 
-# Step 10 - alloc_workspace (not yet solved)
-# TODO: implement
+# Step 10 - alloc_workspace
+#include <cuda_runtime.h>
+
+struct Workspace {
+    int batch;
+    float *H, *P;                    // forward: hidden activations, probabilities
+    float *dZ2, *dH;                 // backward: gradients w.r.t. logits and hidden
+    float *dW1, *db1, *dW2, *db2;    // parameter gradients
+};
+
+Workspace alloc_workspace(const MLP& m, int batch) {
+    Workspace w = {batch, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
+    // TODO: cudaMalloc and cudaMemset all eight buffers with the sizes in the description
+    cudaMalloc(&w.H, (size_t) batch * m.hidden * sizeof(float));
+    cudaMalloc(&w.dH, (size_t) batch * m.hidden * sizeof(float));
+    cudaMalloc(&w.P, (size_t) batch * m.out_dim * sizeof(float));
+    cudaMalloc(&w.dZ2, (size_t) batch * m.out_dim * sizeof(float));
+    cudaMalloc(&w.dW1, (size_t) m.in_dim * m.hidden * sizeof(float));
+    cudaMalloc(&w.db1, (size_t) m.hidden * sizeof(float));
+    cudaMalloc(&w.dW2, (size_t) m.hidden * m.out_dim * sizeof(float));
+    cudaMalloc(&w.db2, (size_t) m.out_dim * sizeof(float));
+
+    cudaMemset(w.H, 0,  (size_t) batch * m.hidden * sizeof(float));
+    cudaMemset(w.dH, 0,  (size_t) batch * m.hidden * sizeof(float));
+    cudaMemset(w.P,   0,(size_t) batch * m.out_dim * sizeof(float));
+    cudaMemset(w.dZ2, 0, (size_t) batch * m.out_dim * sizeof(float));
+    cudaMemset(w.dW1, 0, (size_t) m.in_dim * m.hidden * sizeof(float));
+    cudaMemset(w.db1, 0, (size_t) m.hidden * sizeof(float));
+    cudaMemset(w.dW2, 0, (size_t) m.hidden * m.out_dim * sizeof(float));
+    cudaMemset(w.db2, 0, (size_t) m.out_dim * sizeof(float));
+    return w;
+}
+
+void free_workspace(Workspace& w) {
+    // TODO: cudaFree all eight, set them to nullptr
+    cudaFree(w.H); w.H = nullptr;
+    cudaFree(w.dH); w.dH = nullptr;
+    cudaFree(w.P); w.P = nullptr;
+    cudaFree(w.dZ2); w.dZ2 = nullptr;
+    cudaFree(w.dW1); w.dW1 = nullptr;
+    cudaFree(w.db1); w.db1 = nullptr;
+    cudaFree(w.dW2); w.dW2 = nullptr;
+    cudaFree(w.db2); w.db2 = nullptr;
+}
 
 # Step 11 - forward_mlp (not yet solved)
 # TODO: implement
