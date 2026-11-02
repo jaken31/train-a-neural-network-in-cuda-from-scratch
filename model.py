@@ -365,8 +365,25 @@ void launch_matmul_nt(const float* D, const float* W, float* C, int R, int J, in
 
 }
 
-# Step 15 - column_sum_kernel (not yet solved)
-# TODO: implement
+# Step 15 - column_sum_kernel
+#include <cuda_runtime.h>
+
+__global__ void column_sum_kernel(const float* D, float* out, int rows, int cols) {
+    // TODO: thread c sums column c over all rows
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < cols) {
+        float sum = 0.0f;
+        for (int i = 0; i < rows; i++) {
+            sum += D[i * cols + idx];
+        }
+        out[idx] = sum;
+    }
+}
+
+void launch_column_sum(const float* D, float* out, int rows, int cols) {
+    // TODO: 128 threads per block, one per column
+    column_sum_kernel<<<(cols + 127)/128, 128>>>(D, out, rows, cols);
+}
 
 # Step 16 - relu_backward_kernel (not yet solved)
 # TODO: implement
