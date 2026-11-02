@@ -9,7 +9,7 @@ import numpy as np
 # Step 1 - report_cuda_error
 #include <cstdio>
 #include <cuda_runtime.h>
-
+#include <cfloat>
 int report_cuda_error(cudaError_t err, const char* what) {
     // TODO: return 0 on cudaSuccess; otherwise print
     // "CUDA error in <what>: <cudaGetErrorString(err)>" to stderr and return 1
