@@ -33,6 +33,3 @@ python scaffold.py
 - [x] **21.** accuracy_kernel
 - [x] **22.** time_train_step_ms
 
----
-
-Built on Deep-ML.
