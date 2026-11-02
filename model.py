@@ -416,8 +416,21 @@ void backward_mlp(const MLP& m, const float* X, const int* labels, int batch, Wo
     launch_column_sum(w.dH, w.db1, batch, m.hidden);
 }
 
-# Step 18 - sgd_update_kernel (not yet solved)
-# TODO: implement
+# Step 18 - sgd_update_kernel
+#include <cuda_runtime.h>
+
+__global__ void sgd_update_kernel(float* param, const float* grad, float lr, int n) {
+    // TODO: param[i] -= lr * grad[i]
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < n) {
+        param[idx] -= lr * grad[idx];
+    }
+}
+
+void launch_sgd_update(float* param, const float* grad, float lr, int n) {
+    // TODO: 256 threads per block
+    sgd_update_kernel<<<(n + 255) / 256, 256>>>(param, grad, lr, n);
+}
 
 # Step 19 - train_step (not yet solved)
 # TODO: implement
