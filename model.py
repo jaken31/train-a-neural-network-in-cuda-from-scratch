@@ -445,8 +445,20 @@ float train_step(MLP& m, Workspace& w, const float* X, const int* labels, int ba
     return loss;
 }
 
-# Step 20 - train_mlp (not yet solved)
-# TODO: implement
+# Step 20 - train_mlp
+#include <cstdio>
+
+float train_mlp(MLP& m, Workspace& w, const float* X, const int* labels, int batch, float lr, int epochs, int print_every) {
+    // TODO: epochs calls to train_step; print "epoch %5d  loss %.4f\n" at epoch 1 and every print_every
+    float loss = 0.0f;
+    for (int i = 0; i < epochs; i++) {
+        loss = train_step(m, w, X, labels, batch, lr);
+        if (print_every > 0) {
+            printf("epoch %5d loss %.4f\n", epochs, loss);
+        }
+    }
+    return epochs > 0 ? loss : 0.0f;
+}
 
 # Step 21 - accuracy_kernel (not yet solved)
 # TODO: implement
