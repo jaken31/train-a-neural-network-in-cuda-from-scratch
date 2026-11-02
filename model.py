@@ -142,7 +142,7 @@ __global__ void softmax_rows_kernel(const float* logits, float* probs, int rows,
     if (i >= rows) {
         return;
     }
-    float row_max = -FLT_MIN;
+    float row_max = -FLT_MAX;
     for (int j = 0; j < cols; j++) {
         row_max = max(logits[i * cols + j], row_max);
     }
