@@ -493,6 +493,26 @@ float accuracy(const float* probs, const int* labels, int rows, int cols) {
 
 }
 
-# Step 22 - time_train_step_ms (not yet solved)
-# TODO: implement
+# Step 22 - time_train_step_ms
+#include <cuda_runtime.h>
+
+float time_train_step_ms(MLP& m, Workspace& w, const float* X, const int* labels, int batch, float lr, int reps) {
+    // TODO: warm-up train_step; event, reps x train_step, event; synchronize; elapsed / reps
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+
+    train_step(m, w, X, labels, batch, lr);
+    cudaEventRecord(start, 0);
+    for (int i = 0; i < reps; i++) {
+        train_step(m, w, X, labels, batch, lr);
+    }
+    cudaEventRecord(stop, 0);
+    cudaEventSynchronize(stop);
+    float ms = 0;
+    cudaEventElapsedTime(&ms, start, stop);
+    cudaEventDestroy(start);
+    cudaEventDestroy(stop);
+    return ms / reps;
+}
 
